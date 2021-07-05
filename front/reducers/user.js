@@ -29,6 +29,9 @@ export const LOG_OUT_REQUEST = 'LOG_OUT_REQUEST';
 export const LOG_OUT_SUCCESS = 'LOG_OUT_SUCCESS';
 export const LOG_OUT_FAILURE = 'LOG_OUT_FAILURE';
 
+export const ADD_POST_TO_ME = 'ADD_POST_TO_ME';
+
+
 // const reducer = (state = initialState, action) => {
 //     switch (action.type) {
 //         case "LOG_IN":
@@ -90,6 +93,16 @@ const reducer = (state = initialState, action) => {
                 logOutLoading: false,
                 logouterror: action.error,
             };
+
+        case ADD_POST_TO_ME:
+            return {
+                ...state,
+                me: {
+                    ...state.me,
+                    Posts: [{ id: action.data }, ...state.me.Posts],
+                },
+            };
+
         default:
             return state;
     }
