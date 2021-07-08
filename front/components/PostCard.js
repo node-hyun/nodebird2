@@ -2,17 +2,20 @@ import React, { useState, useCallback } from "react";
 import { RetweetOutlined, HeartOutlined, HeartTwoTone, MessageOutlined, EllipsisOutlined } from '@ant-design/icons';
 
 import { Card, Avatar, List, Comment, Popover, Button } from 'antd';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import CommentForm from './CommentForm';
 import PostImages from "./PostImages";
 import PostCardContent from "../components/PostCardContent";
+import { REMOVE_POST_REQUEST } from '../reducers/post';
+
 
 
 const PostCard = ({ post }) => {
-    console.log("post(PostCard) : ", post);
-
+    const dispatch = useDispatch();
+    const { removePostLoading } = useSelector((state) => state.post);
     const { me } = useSelector((state) => state.user);
     const id = me && me.id;
+    console.log("post(PostCard) : ", post);
 
     const [commentFormOpened, setCommentFormOpened] = useState(false);
     const [liked, setLiked] = useState(false);
@@ -25,6 +28,13 @@ const PostCard = ({ post }) => {
         setCommentFormOpened((prev) => !prev);
     }, []);
 
+
+    const onRemovePost = useCallback(() => {
+        dispatch({
+            type: REMOVE_POST_REQUEST,
+            data: post.id,
+        });
+    }, []);
     return (
         <>
             <Card
@@ -41,11 +51,11 @@ const PostCard = ({ post }) => {
                         key="ellipsis"
                         content={(
                             <Button.Group>
-                                {id && post.User.nickname === id
+                                {id && post.User.id === id
                                     ? (
                                         <>
                                             <Button>수정</Button>
-                                            <Button type="danger">삭제</Button>
+                                            <Button type="danger" loading={removePostLoading} onClick={onRemovePost}>삭제</Button>
                                         </>
                                     )
                                     : <Button>신고</Button>}
