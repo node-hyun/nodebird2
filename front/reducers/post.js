@@ -1,36 +1,10 @@
 import shortId from 'shortid';
 import produce from 'immer';
+import faker from 'faker';
 
 
 export const initialState = {
-    mainPosts: [
-        {
-            id: 1,
-            User: {
-                id: 1,
-                nickname: 'terecal',
-            },
-            content: 'sample 게시글 #test',
-            Images: [{
-                src: 'https://image.shutterstock.com/image-vector/sample-red-square-grunge-stamp-260nw-338250266.jpg',
-            }, {
-                src: 'https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg',
-            }, {
-                src: 'https://gimg.gilbut.co.kr/book/BN001998/rn_view_BN001998.jpg',
-            }],
-            Comments: [{
-                User: {
-                    nickname: 'nero',
-                },
-                content: '첫번째 더미 댓글 fisrt ',
-            }, {
-                User: {
-                    nickname: 'hero',
-                },
-                content: '두번째 더미 댓글 second',
-            }]
-        },
-    ],
+    mainPosts: [],
     addPostLoading: false,
     addPostDone: false,
     addPostError: null,
@@ -43,8 +17,37 @@ export const initialState = {
     removePostDone: false,
     removePostError: null,
 
+    loadPostsLoading: false,
+    loadPostsDone: false,
+    loadPostsError: null,
+    hasMorePosts: true,
+
 };
 
+// 게시글 생성(using faker) 함수 
+export const generateDummyPost = (number) => Array(number).fill().map(() => ({
+    id: shortId.generate(),
+    User: {
+        id: shortId.generate(),
+        nickname: faker.name.findName(),
+    },
+    content: faker.lorem.paragraph(),
+    Images: [{
+        src: faker.image.image(),
+    }],
+    Commeents: [{
+        User: {
+            id: shortId.generate(),
+            nickname: faker.name.findName(),
+        },
+        content: faker.lorem.sentence(),
+    }],
+}));
+
+// 최초 게시글 10개 설정
+initialState.mainPosts = initialState.mainPosts.concat(
+    generateDummyPost(10)
+)
 
 const dummyPost = (data) => ({
     id: data.id,
@@ -78,6 +81,9 @@ export const REMOVE_POST_REQUEST = 'REMOVE_POST_REQUEST';
 export const REMOVE_POST_SUCCESS = 'REMOVE_POST_SUCCESS';
 export const REMOVE_POST_FAILURE = 'REMOVE_POST_FAILURE';
 
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
 
 export default (state = initialState, action) => {
     return produce(state, (draft) => {
@@ -134,6 +140,23 @@ export default (state = initialState, action) => {
             case REMOVE_POST_FAILURE:
                 draft.removePostLoading = false;
                 draft.removePostError = action.error;
+                break;
+
+            case LOAD_POSTS_REQUEST:
+                draft.loadPostsLoading = true;
+                draft.loadPostsDone = false;
+                draft.loadPostsError = null;
+                break;
+            case LOAD_POSTS_SUCCESS:
+                draft.loadPostsLoading = false;
+                draft.loadPostsDone = true;
+                draft.mainPosts = action.data.concat(draft.mainPosts);
+                console.log("posts 개수 :" , draft.mainPosts.length);
+                draft.hasMorePosts = draft.mainPosts.length < 50;
+                break;
+            case LOAD_POSTS_FAILURE:
+                draft.loadPostsLoading = false;
+                draft.loadPostsError = action.error;
                 break;
 
             default:

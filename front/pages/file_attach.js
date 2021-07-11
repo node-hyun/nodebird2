@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useState } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import { useDropzone } from 'react-dropzone'
 import Head from "next/head";
 import AppLayout2 from "../components/AppLayout2";
 
+import { ADD_FILE_REQUEST } from '../reducers/file';
 
 
 const h1_style = {
-    textAlign:"center",
+    textAlign: "center",
     fontWeight: 900,
 }
 
@@ -15,20 +17,29 @@ const dropzone_style = {
     borderRadius: "5px",
     border: "2px dashed rgb(0, 135, 247)",
     borderImage: "none",
-    maxWidth: "700px",
     marginLeft: "auto",
-    marginRight: "auto"
+    marginRight: "auto",
+    minHeight: "100px",
+    height:"auto"
 }
 
 
 function file_attach() {
+    // const [filesToUpload, setFilesToUpload] = useState([])
+    const dispatch = useDispatch();
+
     const onDrop = useCallback(acceptedFiles => {
-        // Do something with the files
-        console.log(
-            "acceptedFileds : ", acceptedFiles
-        );
+        console.log("acceptedFileds : ", acceptedFiles);
+        // setFilesToUpload(acceptedFiles)
+        dispatch({
+            type: ADD_FILE_REQUEST,
+            data: acceptedFiles
+        });
     }, [])
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick:true })
+    const { filesToUpload,addFileLoading, addFileDone } = useSelector((state) => state.file);
+
 
     return (
         <>
@@ -41,12 +52,15 @@ function file_attach() {
                     <input {...getInputProps()} />
                     {
                         isDragActive ?
-                            <p>Drop the files here ...</p> :
-                            <p>Drag 'n' drop some files here, or click to select files</p>
+                            <p>Drop the filesToUpload here ...</p> :
+                            <p>Drag 'n' drop some filesToUpload here, or click to select filesToUpload</p>
                     }
 
-                    <div style={{height:"80px"}}></div>
-
+                    {filesToUpload && filesToUpload.map((file)=> {
+                        return (
+                            <div>{file.name}</div>
+                        )
+                    })}
                 </div>
             </AppLayout2>
 

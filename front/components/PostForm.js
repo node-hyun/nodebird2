@@ -13,6 +13,7 @@ function PostForm() {
     const dispatch = useDispatch();
     const [text, onChangeText, setText] = useInput("");
     const { addPostLoading, addPostDone } = useSelector((state) => state.post);
+    
 
     useEffect(() => {
         if (addPostDone) {

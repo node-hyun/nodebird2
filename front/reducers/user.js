@@ -19,6 +19,14 @@ export const initialState = {
     unfollowDone: false,
     unfollowError: null,
 
+    signUpLoading: false, // 회원가입 시도중
+    signUpDone: false,
+    signUpError: null,
+
+    loadUserLoading: false, // 유저 정보 가져오기 시도중
+    loadUserDone: false,
+    loadUserError: null,
+
 };
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
@@ -37,7 +45,15 @@ export const UNFOLLOW_REQUEST = 'UNFOLLOW_REQUEST';
 export const UNFOLLOW_SUCCESS = 'UNFOLLOW_SUCCESS';
 export const UNFOLLOW_FAILURE = 'UNFOLLOW_FAILURE';
 
+export const SIGN_UP_REQUEST = 'SIGN_UP_REQUEST';
+export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS';
+export const SIGN_UP_FAILURE = 'SIGN_UP_FAILURE';
+
 export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME';
+
+export const LOAD_USER_REQUEST = 'LOAD_USER_REQUEST';
+export const LOAD_USER_SUCCESS = 'LOAD_USER_SUCCESS';
+export const LOAD_USER_FAILURE = 'LOAD_USER_FAILURE';
 
 const dummyUser = (data) => ({
     ...data,
@@ -69,7 +85,7 @@ const reducer = (state = initialState, action) => {
                 // };
                 draft.logInDone = true;
                 draft.logInLoading = false;
-                draft.me = dummyUser(action.data);
+                draft.me = action.data;
                 break;
             case "LOG_IN_FAILURE":
                 // return {
@@ -157,6 +173,35 @@ const reducer = (state = initialState, action) => {
             case UNFOLLOW_FAILURE:
                 draft.unfollowLoading = false;
                 draft.unfollowError = action.error;
+                break;
+
+            case SIGN_UP_REQUEST:
+                draft.signUpLoading = true;
+                draft.signUpError = null;
+                draft.signUpDone = false;
+                break;
+            case SIGN_UP_SUCCESS:
+                draft.signUpLoading = false;
+                draft.signUpDone = true;
+                break;
+            case SIGN_UP_FAILURE:
+                draft.signUpLoading = false;
+                draft.signUpError = action.error;
+                break;
+
+            case LOAD_USER_REQUEST:
+                draft.loadUserLoading = true;
+                draft.loadUserError = null;
+                draft.loadUserDone = false;
+                break;
+            case LOAD_USER_SUCCESS:
+                draft.loadUserLoading = false;
+                draft.me = action.data;
+                draft.loadUserDone = true;
+                break;
+            case LOAD_USER_FAILURE:
+                draft.loadUserLoading = false;
+                draft.loadUserError = action.error;
                 break;
 
             default:

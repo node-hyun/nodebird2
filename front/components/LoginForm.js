@@ -1,22 +1,27 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { Form, Input } from "antd";
 import Link from "next/link";
 import { LoginFormWrapper, LoginButtonWrapper, LoginButton } from './style/LoginFormStyle';
-// import { useDispatch } from "react-redux";
 import { useDispatch, useSelector } from 'react-redux';
-// import { loginAction } from "../reducers/user";
 import { LOG_IN_REQUEST } from '../reducers/user';
+import useInput from '../hooks/useInput';
 
 
 const LoginForm = () => {
     const dispatch = useDispatch();
-    const [id, setId] = useState("");
+    const [email, onChangeEmail] = useInput('');
     const [password, setPassword] = useState("");
-    const { logInLoading } = useSelector((state) => state.user);
+    const { logInLoading, logInError } = useSelector((state) => state.user);
 
-    const onChangeId = useCallback((e) => {
-        setId(e.target.value);
-    }, []);
+    useEffect(() => {
+        if (logInError) {
+            alert(logInError);
+        }
+    }, [logInError]);
+
+    // const onChangeEmail = useCallback((e) => {
+    //     setId(e.target.value);
+    // }, []);
 
     const onChangePassword = useCallback((e) => {
         setPassword(e.target.value);
@@ -27,9 +32,9 @@ const LoginForm = () => {
         // dispatch(loginAction({ id, password }));
         dispatch({
             type: LOG_IN_REQUEST,
-            data: { id, password },
+            data: { email, password },
         });
-    }, [id, password]);
+    }, [email, password]);
 
     return (
         <LoginFormWrapper>
@@ -39,8 +44,8 @@ const LoginForm = () => {
                     <br />
                     <Input
                         name="user-id"
-                        value={id}
-                        onChange={onChangeId}
+                        value={email}
+                        onChange={onChangeEmail}
                         required
                     />
                 </div>

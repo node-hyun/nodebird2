@@ -16,7 +16,7 @@ const PostCard = ({ post }) => {
     const { removePostLoading } = useSelector((state) => state.post);
     const { me } = useSelector((state) => state.user);
     const id = me && me.id;
-    console.log("post(PostCard) : ", post);
+    // console.log("post(PostCard) : ", post);
 
     const [commentFormOpened, setCommentFormOpened] = useState(false);
     const [liked, setLiked] = useState(false);
@@ -39,7 +39,7 @@ const PostCard = ({ post }) => {
     return (
         <>
             <Card
-                style={{ width: "100%" }}
+                style={{ width: "100%" , marginBottom: "20px"}}
                 cover={post.Images[0] && <PostImages images={post.Images} />}
                 actions={[
                     <RetweetOutlined key="retweet" />,
